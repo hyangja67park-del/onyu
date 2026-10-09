@@ -15,6 +15,7 @@
 - `index.html` 한 파일에 HTML·CSS·JS가 모두 들어 있다 (빌드 도구 없음). PWA 파일: `manifest.json`, `sw.js`, `icons/`.
 - 저장은 브라우저 localStorage만 사용 (서버·로그인 없음).
 - 화면: 시작 → 사다리 빠른진단(3문항) 또는 정밀진단(15문항, 가중치 점수) → 결과(체질·강약 장부·오행 패널·7일 식단/차/운동/영양소).
+- 건강 노트 화면(`S.screen="note"`): 소화·잠·기운 1~5점 매일 기록, 최근 2주 그래프(SVG). 저장 키 `onyu-notes-v1` = `{"YYYY-MM-DD":{dig,sleep,energy}}` (휴대폰 현지 날짜).
 
 ## 지켜야 할 것
 - 글자는 크게(본문 17px 이상), 버튼은 크게, 대비는 높게. 다크모드 유지.
@@ -29,6 +30,6 @@
 1. ✅ 기본 진단 + 결과
 2. ✅ 맞춤 관리 (7일 식단·차·운동·영양소, 오행 패널, 전용 아이콘 7종)
 3. ✅ PWA 전환 — 홈 화면 설치, 오프라인 동작, GitHub Pages 배포 (앱 수정 후 sw.js의 VERSION 숫자를 올릴 것)
-4. 건강 노트·그래프, 알림
+4. 🔶 건강 노트·그래프 ✅ (소화·잠·기운 1~5점, 2주 그래프) / 알림 — 남음
 5. AI 상담 챗봇
 6. (장기) Flutter + Firebase 정식 앱. DB 구조 후보: Questions · Answers · Constitution · Recommendations

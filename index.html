@@ -199,6 +199,57 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .screen{display:flex;flex-direction:column;gap:20px;animation:in .3s ease}
 @keyframes in{from{transform:translateY(8px)}to{transform:none}}
 @media (prefers-reduced-motion:reduce){.screen{animation:none}.bar i{transition:none}}
+/* 건강 노트: 매일 소화·잠·기운 1~5점 기록 + 최근 2주 그래프 */
+.nc{background:var(--surface);border:2px solid var(--accent);border-radius:var(--r);padding:18px;display:flex;flex-direction:column;gap:12px}
+.nc .nh{display:flex;align-items:center;gap:12px}
+.nc .nh .em{font-size:34px;line-height:1;flex:none}
+.nc b{font-size:19px;display:block}
+.nc p{margin:0;font-size:16px;color:var(--muted);word-break:keep-all}
+.nc .done{display:flex;gap:8px;flex-wrap:wrap}
+.nc .done span{background:var(--accent-soft);border-radius:10px;padding:5px 12px;font-size:16px;font-weight:600}
+.dnav{display:grid;grid-template-columns:56px 1fr 56px;gap:8px;align-items:center}
+.dnav button{border:1.5px solid var(--line);background:var(--surface);border-radius:12px;height:52px;font-size:22px;font-weight:700}
+.dnav button:disabled{opacity:.3;cursor:default}
+.dnav .dl{text-align:center;display:flex;flex-direction:column;line-height:1.3}
+.dnav .dl b{font-family:var(--font-display);font-size:22px}
+.dnav .dl span{font-size:14px;color:var(--muted);font-weight:600}
+.dnav .dl .td{color:var(--accent)}
+.qrow{display:flex;flex-direction:column;gap:10px}
+.qrow+.qrow{border-top:1px solid var(--line);padding-top:16px}
+.qh{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.qh b{font-size:19px}
+.qh .pick-w{font-size:16px;font-weight:700;color:var(--sc)}
+.qh .pick-w.none{color:var(--muted);font-weight:500}
+.sc5{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.sc5 button{border:2px solid var(--line);background:var(--bg);border-radius:14px;min-height:64px;padding:6px 0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.sc5 button b{font-size:22px;line-height:1.1;font-variant-numeric:tabular-nums}
+.sc5 button span{font-size:12px;color:var(--muted);font-weight:600;word-break:keep-all;line-height:1.2}
+.sc5 button.on{background:var(--sc);border-color:var(--sc);color:var(--surface)}
+.sc5 button.on span{color:var(--surface)}
+.ser{display:flex;gap:6px;flex-wrap:wrap}
+.ser .tab{display:inline-flex;align-items:center;gap:6px}
+.mk-i{display:inline-block;width:12px;height:12px;background:var(--sc);border-radius:50%}
+.mk-i.sq{border-radius:2px}.mk-i.di{transform:rotate(45deg) scale(.85);border-radius:1px}
+.tab.on .mk-i{outline:2px solid var(--bg)}
+.chart{width:100%;height:auto;display:block;touch-action:manipulation}
+.chart .gl{stroke:var(--line);stroke-width:1}
+.chart .gl.mid{stroke-dasharray:4 4}
+.chart .yl{font-size:12px;fill:var(--muted);font-family:var(--font-body)}
+.chart .xl{font-size:12px;fill:var(--muted);font-family:var(--font-body);text-anchor:middle;font-variant-numeric:tabular-nums}
+.chart .xl.t{fill:var(--accent);font-weight:700}
+.chart .ln{fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.chart .pt{stroke:var(--surface);stroke-width:1.5}
+.chart .selb{fill:var(--accent-soft)}
+.chart .hit{fill:transparent;cursor:pointer}
+.avg3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.avg3 div{background:var(--bg);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:2px;border-top:4px solid var(--sc);min-width:0}
+.avg3 span{font-size:14px;color:var(--muted);font-weight:600}
+.avg3 b{font-size:22px;font-variant-numeric:tabular-nums}
+.avg3 em{font-style:normal;font-size:13px;color:var(--muted);word-break:keep-all}
+.empty{text-align:center;color:var(--muted);font-size:16px;margin:0;padding:6px 0}
+.lowc{border:1.5px solid var(--oh-fire);border-radius:14px;padding:14px 16px;font-size:16px;line-height:1.55;word-break:keep-all}
+.lowc p{margin:0}
+.clr{border:0;background:none;color:var(--muted);font-size:15px;text-decoration:underline;padding:6px;align-self:center}
 </style>
 
 <div class="app" id="app"></div>
@@ -469,6 +520,7 @@ function render(){
   if(S.screen==="start") renderStart();
   else if(S.screen==="quiz") renderQuiz();
   else if(S.screen==="ladder") renderLadder();
+  else if(S.screen==="note") renderNote();
   else renderResult();
   window.scrollTo(0,0);
 }
@@ -649,6 +701,7 @@ function renderStart(){
     </div>
     
     ${last?`<div class="last"><div><div class="note">지난 결과 · ${esc(last.date)}</div><b style="font-size:19px">${esc(last.type)}</b></div><button id="seeLast">다시 보기</button></div>`:""}
+    ${NOTE_CARD()}
     ${INSTALL_CARD()}
     <button class="btn" id="go">사다리 타고 체질 찾기 · 30초</button>
     <button class="btn ghost" id="go2">정밀 진단 · 15문항 3분</button>
@@ -656,6 +709,7 @@ function renderStart(){
   </section>`;
   document.getElementById("go").onclick = startLadder;
   document.getElementById("go2").onclick = startQuiz;
+  document.getElementById("openNote").onclick = openNote;
   bindInstall();
   $app.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>{ S.view=b.dataset.go; S.tab="food"; S.browse=true; S.screen="result"; render(); });
   const sl = document.getElementById("seeLast");
@@ -743,10 +797,12 @@ function renderResult(){
     <div class="panel">${body}</div>
     <div class="panel" style="gap:8px"><span class="eyebrow">오늘의 한 줄</span><p style="font-family:var(--font-display);font-size:19px">${T.tip}</p></div>
     <div><span class="eyebrow">다른 체질도 보기</span><div class="tabs" style="margin-top:8px">${ORDER.map(k=>`<button class="tab${k===v?" on":""}" data-v="${k}">${k}</button>`).join("")}</div></div>
+    <button class="btn ghost" id="noteR">📒 오늘 컨디션 기록하기 (건강 노트)</button>
     <div class="row2"><button class="btn ghost" id="copy">결과 복사</button><button class="btn" id="again">${mine?"다시 진단":"체질 진단하기"}</button></div>
     <div class="warn">사상체질 자가진단은 생활 습관을 돌아보기 위한 참고 자료이며 의학적 진단이 아닙니다. 질환이 있거나 약을 복용 중이라면 음식·차·영양제를 바꾸기 전에 의사나 한의사와 상의하세요.</div>
   </section>`;
   document.getElementById("home").onclick = () => { S.screen="start"; render(); };
+  document.getElementById("noteR").onclick = openNote;
   document.getElementById("again").onclick = () => { S.browse=false; startLadder(); };
   const p2 = document.getElementById("precise2"); if(p2) p2.onclick = () => { S.browse=false; startQuiz(); };
   const m = document.getElementById("mine"); if(m) m.onclick = () => { S.view=mine; render(); };
@@ -761,6 +817,127 @@ function renderResult(){
     else toast("복사가 안 되는 환경입니다");
   };
 }
+
+// ── 건강 노트 (로드맵 4단계): 매일 소화·잠·기운을 1~5점으로 기록, 최근 2주 그래프
+const NOTE_KEY = "onyu-notes-v1"; // {"2026-10-10": {dig:4, sleep:3, energy:5}, ...}
+const NQ = [
+  {k:"dig",    n:"소화", q:"소화는 어땠나요?",     c:"--so-eum",  m:""},
+  {k:"sleep",  n:"잠",   q:"잠은 잘 잤나요?",      c:"--tae-eum", m:"sq"},
+  {k:"energy", n:"기운", q:"오늘 기운은 어떤가요?", c:"--so-yang", m:"di"}
+];
+const NW = ["","아주 나쁨","나쁨","보통","좋음","아주 좋음"];
+const NWEEK = ["일","월","화","수","목","금","토"];
+const dkey = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; // 휴대폰 시간 기준 날짜
+const dback = n => { const d=new Date(); d.setHours(12,0,0,0); d.setDate(d.getDate()-n); return d; };
+const last14 = () => Array.from({length:14},(_,i)=>dback(13-i)); // 13일 전 ~ 오늘
+function loadNotes(){ try{ return JSON.parse(localStorage.getItem(NOTE_KEY)) || {}; }catch(e){ return {}; } }
+function saveNotes(n){ try{ localStorage.setItem(NOTE_KEY, JSON.stringify(n)); return true; }catch(e){ return false; } }
+const avg = a => a.length ? a.reduce((s,x)=>s+x,0)/a.length : null;
+
+function NOTE_CARD(){
+  const t = loadNotes()[dkey(new Date())];
+  const has = t && NQ.some(q=>t[q.k]);
+  return `<div class="nc"><div class="nh"><span class="em" aria-hidden="true">📒</span><div><b>건강 노트</b><p>${has?"오늘 컨디션을 기록했어요.":"오늘 소화·잠·기운은 어떠세요? 10초면 기록할 수 있어요."}</p></div></div>
+    ${has?`<div class="done">${NQ.map(q=>`<span>${q.n} ${t[q.k]?t[q.k]+"점":"–"}</span>`).join("")}</div>`:""}
+    <button class="btn${has?" ghost":""}" id="openNote">${has?"2주 그래프 보기":"오늘 컨디션 기록하기"}</button></div>`;
+}
+
+function chartSVG(days, notes, sel){
+  const W=340, H=200, L=38, R=12, T=12, B=30, step=(W-L-R)/13;
+  const x = i => L + i*step, y = v => T + (5-v)*(H-T-B)/4;
+  const keys = days.map(dkey), si = keys.indexOf(S.nd);
+  let g = "";
+  if(si>=0) g += `<rect class="selb" x="${x(si)-step/2}" y="${T-6}" width="${step}" height="${H-T-B+12}" rx="6"/>`;
+  [5,4,3,2,1].forEach(v => { g += `<line class="gl${v===3?" mid":""}" x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}"/>`; });
+  [[5,"좋음"],[3,"보통"],[1,"나쁨"]].forEach(([v,l]) => { g += `<text class="yl" x="0" y="${y(v)+4}">${l}</text>`; });
+  days.forEach((d,i) => {
+    const today = i===13, lab = today ? "오늘" : (i===0 || d.getDate()===1) ? `${d.getMonth()+1}/${d.getDate()}` : d.getDate();
+    if(today || i%2===0) g += `<text class="xl${today?" t":""}" x="${x(i)}" y="${H-8}">${lab}</text>`;
+  });
+  NQ.filter(q => sel==="all" || sel===q.k).forEach(q => {
+    let d = "", pen = false, pts = "";
+    keys.forEach((k,i) => { const v = notes[k] && notes[k][q.k];
+      if(!v){ pen=false; return; }
+      d += `${pen?"L":"M"}${x(i).toFixed(1)} ${y(v).toFixed(1)} `; pen = true;
+      const cx=x(i), cy=y(v);
+      pts += q.m==="sq" ? `<rect class="pt" x="${cx-5}" y="${cy-5}" width="10" height="10" rx="1.5" style="fill:var(${q.c})"/>`
+           : q.m==="di" ? `<path class="pt" d="M${cx} ${cy-6.5}L${cx+6.5} ${cy}L${cx} ${cy+6.5}L${cx-6.5} ${cy}Z" style="fill:var(${q.c})"/>`
+           : `<circle class="pt" cx="${cx}" cy="${cy}" r="5.5" style="fill:var(${q.c})"/>`;
+    });
+    g += `<path class="ln" d="${d}" style="stroke:var(${q.c})"/>${pts}`;
+  });
+  keys.forEach((k,i) => { g += `<rect class="hit" data-nd="${k}" x="${x(i)-step/2}" y="0" width="${step}" height="${H}"><title>${k}</title></rect>`; });
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="최근 2주 컨디션 그래프">${g}</svg>`;
+}
+
+function renderNote(){
+  const notes = loadNotes(), days = last14(), keys = days.map(dkey), todayK = keys[13];
+  if(!S.nd || !keys.includes(S.nd)) S.nd = todayK;
+  if(!S.ns) S.ns = "all";
+  const di = keys.indexOf(S.nd), d = days[di], rec = notes[S.nd] || {};
+  const hasRec = NQ.some(q=>rec[q.k]);
+  const cnt = keys.filter(k => notes[k] && NQ.some(q=>notes[k][q.k])).length;
+
+  // 2주 평균 + 지난주 대비
+  const stats = NQ.map(q => {
+    const all = keys.map(k=>notes[k]&&notes[k][q.k]).filter(Boolean);
+    const w1 = keys.slice(0,7).map(k=>notes[k]&&notes[k][q.k]).filter(Boolean);
+    const w2 = keys.slice(7).map(k=>notes[k]&&notes[k][q.k]).filter(Boolean);
+    let tr = "";
+    if(w1.length>=2 && w2.length>=2){ const df = avg(w2)-avg(w1); tr = df>=0.5?"지난주보다 좋아짐 ↑":df<=-0.5?"지난주보다 낮아짐 ↓":"지난주와 비슷"; }
+    return {q, a:avg(all), tr};
+  });
+  // 최근 3일 연속 2점 이하인 항목
+  const low = NQ.filter(q => keys.slice(11).every(k => notes[k] && notes[k][q.k] && notes[k][q.k] <= 2));
+  const mine = loadLast();
+
+  $app.innerHTML = `<section class="screen">
+    <div class="top"><button class="back" id="home" aria-label="처음으로">⌂</button><span class="eyebrow" style="flex:1">건강 노트 · 매일 컨디션 기록</span>${LOGO(30)}</div>
+    <div class="panel">
+      <div class="dnav">
+        <button id="prevD" aria-label="하루 전" ${di===0?"disabled":""}>‹</button>
+        <div class="dl"><b>${d.getMonth()+1}월 ${d.getDate()}일 (${NWEEK[d.getDay()]})</b><span class="${di===13?"td":""}">${di===13?"오늘":di===12?"어제":`${13-di}일 전`}${hasRec?" · 기록됨 ✓":""}</span></div>
+        <button id="nextD" aria-label="하루 뒤" ${di===13?"disabled":""}>›</button>
+      </div>
+      ${NQ.map(q => `<div class="qrow" style="--sc:var(${q.c})">
+        <div class="qh"><b>${q.q}</b><span class="pick-w${rec[q.k]?"":" none"}">${rec[q.k]?NW[rec[q.k]]:"아직 안 고름"}</span></div>
+        <div class="sc5" role="radiogroup" aria-label="${q.n} 점수">${[1,2,3,4,5].map(v=>`<button class="${rec[q.k]===v?"on":""}" data-q="${q.k}" data-v="${v}" role="radio" aria-checked="${rec[q.k]===v}" aria-label="${q.n} ${v}점 ${NW[v]}"><b>${v}</b><span>${NW[v]}</span></button>`).join("")}</div>
+      </div>`).join("")}
+      <p class="note" style="text-align:center">누르는 즉시 저장돼요. 점수를 다시 누르면 바꿀 수 있어요.</p>
+      ${hasRec?`<button class="clr" id="clrD">이 날 기록 지우기</button>`:""}
+    </div>
+
+    <div class="panel">
+      <div class="qh"><h3>최근 2주 그래프</h3><span class="note">${cnt}일 기록</span></div>
+      <div class="ser">${[["all","모두"],...NQ.map(q=>[q.k,q.n])].map(([k,l])=>{ const q=NQ.find(z=>z.k===k);
+        return `<button class="tab${S.ns===k?" on":""}" data-s="${k}">${q?`<i class="mk-i ${q.m}" style="--sc:var(${q.c})"></i>`:""}${l}</button>`; }).join("")}</div>
+      ${cnt ? chartSVG(days, notes, S.ns) + `<p class="note" style="text-align:center;margin:0">그래프의 날짜를 누르면 그날 기록을 고칠 수 있어요.</p>`
+            : `<p class="empty">아직 기록이 없어요.<br>위에서 오늘 점수를 누르면 여기에 그래프가 그려져요.</p>`}
+      ${cnt ? `<div class="avg3">${stats.map(s=>`<div style="--sc:var(${s.q.c})"><span>${s.q.n} 평균</span><b>${s.a==null?"–":s.a.toFixed(1)}</b><em>${s.tr||"2주 평균"}</em></div>`).join("")}</div>` : ""}
+    </div>
+
+    ${low.length ? `<div class="lowc"><p><b>최근 3일 동안 ${low.map(q=>q.n).join("·")} 점수가 낮아요.</b> 오늘은 무리하지 말고 푹 쉬세요. 이런 상태가 계속되면 의사나 한의사와 상담해 보세요.</p></div>` : ""}
+    ${mine ? `<button class="btn ghost" id="toMine">나의 체질(${esc(mine.type)}) 맞춤 관리 보기</button>` : `<button class="btn ghost" id="toTest">체질 진단하고 맞춤 관리 받기</button>`}
+    <div class="warn">건강 노트는 내 휴대폰에만 저장되며, 생활 습관을 돌아보기 위한 기록입니다. 의학적 진단이 아니므로, 불편한 증상이 있으면 전문가와 상담하세요.</div>
+  </section>`;
+
+  const keep = fn => () => { const y=window.scrollY; fn(); renderNote(); window.scrollTo(0,y); };
+  document.getElementById("home").onclick = () => { S.screen="start"; render(); };
+  document.getElementById("prevD").onclick = keep(() => { S.nd = keys[Math.max(0,di-1)]; });
+  document.getElementById("nextD").onclick = keep(() => { S.nd = keys[Math.min(13,di+1)]; });
+  $app.querySelectorAll("[data-q]").forEach(b => b.onclick = keep(() => {
+    const n = loadNotes(), r = n[S.nd] || {}; r[b.dataset.q] = +b.dataset.v; n[S.nd] = r;
+    toast(saveNotes(n) ? "저장했어요" : "저장할 수 없는 환경입니다");
+  }));
+  $app.querySelectorAll("[data-s]").forEach(b => b.onclick = keep(() => { S.ns = b.dataset.s; }));
+  $app.querySelectorAll("[data-nd]").forEach(b => b.onclick = () => { S.nd = b.dataset.nd; renderNote(); window.scrollTo({top:0,behavior:"smooth"}); });
+  const c = document.getElementById("clrD");
+  if(c) c.onclick = keep(() => { if(!confirm(`${d.getMonth()+1}월 ${d.getDate()}일 기록을 지울까요?`)) return; const n = loadNotes(); delete n[S.nd]; saveNotes(n); toast("기록을 지웠어요"); });
+  const tm = document.getElementById("toMine");
+  if(tm) tm.onclick = () => { S.browse=false; S.result=mine; S.view=mine.type; S.tab="food"; S.screen="result"; render(); };
+  const tt = document.getElementById("toTest"); if(tt) tt.onclick = startLadder;
+}
+function openNote(){ S.nd = null; S.screen = "note"; render(); }
 
 function toast(msg){ const t=document.getElementById("toast"); t.textContent=msg; t.hidden=false; clearTimeout(toast._t); toast._t=setTimeout(()=>t.hidden=true,1800); }
 

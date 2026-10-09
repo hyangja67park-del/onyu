@@ -1,5 +1,5 @@
 // 온유 오프라인 캐시. 앱을 수정해 올릴 때마다 VERSION 숫자를 올리면 다음 실행 때 새 버전으로 바뀐다.
-const VERSION = "onyu-v1";
+const VERSION = "onyu-v2";
 const CORE = [
   "./",
   "./index.html",
